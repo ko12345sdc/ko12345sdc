@@ -16,275 +16,6 @@ You can click the Preview link to take a look at your changes.
 
 
 
-NoxPlayer
-https://www.bignox.com/
-https://www.bignox.com/en/download/fullPackage?beta
-https://www.bignox.com/en/download/fullPackage/win_64?beta
-https://drive.google.com/file/d/1OaupaK_xlBCF42cENf1KMIKREtLxzSda/view?usp=sharing
-https://www.bignox.com/en/download/fullPackage/mac_fullzip?beta
-https://www.bignox.com/en/download/fullPackage/win_64_9?beta
-https://www.bignox.com/en/download/fullPackage/win_64_12?beta
-
-
-
----------------------------------------------------------------------------------------------------
-
-Initial
---------
-Wordlists
-	sudo apt install seclists
-
-----------------------------------------------------------------------------------------------------
-
-sudo -i
-
-ipconfig / ifconfig
-
-netdiscover
-	netdiscover -r [netword_id || 192.168.77.0/24]	
-	netdiscover -i [interface]
-arpscan
-
-Arp
-	nmap -sn -PR [ip]
-nmap
-	ip ip ip ip
-	-sn	ping scan
-	-Pn	skip ping
-	-sL
-	-iL
-	-vv
-	-sV
-	-sC --script=default
-	-A
-	-O
-	-T4
-	-oN -oG
-	-p- -p 0-65535	-p 80 443 21	-p 1-1000
-	-sS
-
-sudo nmap --script smb-os-discovery.nse [ip]
-	also gives FQDN
-
-
-zenmap
-
-hping3 -S [ip] -p 80 -c 5
-
--------
-NetBIOS
--------
-NetBIOS 137,138,139
-nbtstat -a [target ip]
-nbtstat -c
-nmap -sV -v --script nbtstat.nse [ip]
-nmap -sU -p 137 --script nbtstat.nse [ip]
-
-----
-SMB
-----
-445, 137, 138, 139
-sudo nmap -A -p 445 [ip]
-sudo nmap --script smb-os-discovery.nse [ip]
-nmap -p 445 --script=smb-enum-shares.nse, smb-enum-users.nse [ip]
-
-to check available nmap scripts
--------------------------------
-	cd /usr/share/nmap/scripts; ls | grep smb
-
-enum4linux -a [ip]
-
-
--------------------------------------------------------------------------------------------------------------------------------------------------
-gobuster
-	gobuster dir -u http://1.1.1.1 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
-	searching files
-		gobuster dir -u http://1.1.1.1 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x html,css,js,conf
-	vhost enumeration
-		gobuster vhost -u http://example.com -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain
-			-k ------[will ignore all certificate errors]
-fuff
-	ffuf -u http://1.1.1.1/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
-	ffuf -u http://1.1.1.1/FUZZ -w /usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
-	bruteforce files
-		ffuf -u http://1.1.1.1/[folder]/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -e .html,.css,.js,.conf
-	vhost enumeration
-		ffuf -u https://example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -H "HOST:FUZZ.example.com"
-			-fw 205 ---------[in case there are red flags]
-			-fs 4605
-		scanning for http:
-			ffuf -u http://example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -H "HOST:FUZZ.example.com" -fs 0
-	additional subdomains may be mentioned in certificates as Alt Name
-	cert search sites for subdomain search
-	to find flag file:
-			ffuf -u http://[subdomain].example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -e .txt
---------------------------------------------------------------------------------------------------------------------------------------------------
-Wordlists
-	sudo apt install seclists
-
-
-=====
-FQDN
-=====
-nmap -p 389 -sV -iL <target_list>
-
-=====
-Wi-Fi
-=====
-
-WEP:
-	aircrack-ng [pcap_file]
-WPA2:
-	aircrack-ng -a2 -b [Target_BSSID] -w [password_Wordlist.txt] [WP2_pcap_file]
-Get BSSID from Probe Response packets captured
-==> aircrack-ng 'pcap_file_path'
-
-==============
-Mobile/Android
-==============
-adb connect [ip]:5555
-adb shell
-ls
-------------find command for finding the 'scan' folder
-cd sdcard/
-ls
-cd scan
-ls
-
-adb pull /sdcard/scan dd/
-sudo -i
-adb pull /sdcard/scan
-
-ent -h
-apt install ent
-----------entropy: randomness, uniqueness, complexity
-ent evil.elf
-
-sha384sum --help
-sha384sum evil.elf
-
-Cryptography
-==============
-Steganography
-==============
-Whitespce / SNOW
-	darkside.com.au/snow
-snow -C -p "password" file.txt
-
-OpenStego
-HashCalc
-Md5Calculator
-VeraCrypt
-Cracking Hashes
-	hashes.com/en/decrypt/hash
-	crackstation.net
-BCTextEncoder
-CrypTool
-	cryptool.org
-base64encode.com
-base64decode.com
-steghide extract -sf ceh.jpg
-stegsnow -p password -C restricted.txt output.txt
-
-====
-Web
-====
-
-WordPress Bruteforcing
-
-Wpscan
-	wpscan --help
-	wpscan --url http://site.com 
-	enumerating users:
-		wpscan --url http://site.com -e u
-	wpscan --url http://site.com --usernames /home/root9/Desktop/user.txt --passwords /home/root9/Desktop/user.txt
-	wpscan --url http://192.168.1.10:8080/CEH -u sarah -P passwordlist.txt
-
-Metasploit
-	use auxiliary/scanner/http/wordpress_login_enum
-	use wordpress
-	show options
-	set PASS_FILE /home/attacker/Desktop/Wordlist/password.txt
-	set RHOSTS 1.1.1.1 [target ip]
-	set RPORT 8080 [target port]
-	set TARGETURI http://1.1.1.1:8080/CEH
-	set USERNAME admin
-Hydra
-	hydra -l <username> -p <password> <server_ip> <service> -o <file.txt>
-	hydra -L users.txt -p butterfly 1.1.1.1 ssh
-	/usr/share/wordlists/rockyou.txt
-	
-=====
-SQL
-=====
-moviescope sam:test	
-Auth Bypass
-IDOR
-OWASP ZAP
-
-
-Wireshark
-	------>> Finding credentials
-		http.request.method == POST	
-		right-click >>> Follow TCP Stream
-	
-	Attacking IP
-		IPv4 statistics >>>> Source & Destination addresses
-		tcp.flags.syn == 1 and tcp.flags.ack == 0
-	Total number of attacking machines
-		IPv4 statistics >>>> Source & Destination addresses
-		tcp.flags.syn == 1 and tcp.flags.ack == 0		
-
---------------------------------------------
-Vulnerability Scanning/Scoring / CVE / CVSS / EOL
---------------------------------------------
-
-	nmap -Pn --script vuln 192.168.42.1
-	NVD : check severity score ---> 10 
-	
----------------------
-Privilege Escalation
----------------------
-
-	nmap -sV -p 22 192.168.0.0/24
-
-	ssh kali@192.168.0.1
-	password pass@123
-
-	sudo -l
-	sudo -i
-	whoami
-	cd /
-	find . -name imroot.txt
-	cat /home/kali/Documents/imroot.txt	
-
-mysql 3306
-
-====
-RDP
-====
- RDP port 3389
- scan the subnet for IPs that have 3389 open
- nmap -sV -p 3389 <IP>
- nmap -A -p 3389 <IP>
- nmap -Pn -p -sV 3389 <IP>
- Use RDP to log in
- cmd --> net user
-
-
-Server 2019 machine > Confidential > Secret.txt
-Use RDP credentials found earlier to login
-browse to the mentioned path
-open secret.txt
-
-Crack FTP site to obtain flag
-search for IP having port 21 open
-hydra -L /home/attacker/Desktop/CEH_TOOLS/Wordlists/Username.txt -P /home/attacker/Desktop/CEH_TOOLS/Wordlists/Password.txt ftp://1.1.1.1
-hydra -l user -P passlist.txt ftp://1.1.1.1 ---------------[if username is given]
-get flag
-
-find / -type f -name Netnormal.txt 2> /dev/null
-
 ======================================================================================
 Questions
 ===========
@@ -649,53 +380,152 @@ diffCopy code
 -------------------------------------------------------------------------------------------------------
 17. A set of files has been uploaded through DVWA
 (
-http://192.168.44.32:8080/DVWA). The files are located in the
-"C:\wamp64\www\DVWA\ECweb\Certified\" directory. Access the files and decode the
-base64 ciphers to reveal the original message among them. Enter the decrypted message as
-the answer. You can log into the DVWA using the credentials admin/password. (Format:
-A**aaa*AA)
+http://192.168.44.32:8080/DVWA). The files are located in the "C:\wamp64\www\DVWA\ECweb\Certified\" directory. Access the files and decode the base64 ciphers to reveal the original message among them. Enter the decrypted message as the answer. You can log into the DVWA using the credentials admin/password. (Format:A**aaa*AA)
 Answer: R^*ekk%GJ
 Solution:
 Access DVWA Web Application:
 Open your web browser and navigate to http://192.168.44.32:8080/DVWA .
+
 Log in using the provided credentials:
 Username: admin
 Password: password
+
 Navigate to the Directory:
 Once logged in, navigate to the directory containing the files you want to access:
 arduinoCopy code
 http://192.168.44.32:8080/DVWA/ECweb/Certified/
+
 Identify Base64 Encoded Files:
-Look for files within the directory that appear to be encoded in base64. These files typically have names
-or extensions that suggest they contain encoded data, such as .txt , .dat , .bin , etc.
+Look for files within the directory that appear to be encoded in base64. These files typically have names or extensions that suggest they contain encoded data, such as .txt , .dat , .bin , etc.
+
 Decode Base64 Content:
 Download the base64 encoded file(s) to your local machine.
-Use a base64 decoding tool or script to decode the contents. You can use various methods depending on
-your operating system and tools available:
+Use a base64 decoding tool or script to decode the contents. You can use various methods depending on your operating system and tools available:
+
 Command Line (Linux/macOS):
 shCopy code
 cat filename.txt | base64 --decode > decoded.txt
+
 Command Line (Windows, using PowerShell):
 powershellCopy code
 Get-Content filename.txt | ForEach-Object { [System.Text.Encoding]::UTF8.GetS
 tring([System.Convert]::FromBase64String($_)) } > decoded.txt
-Online Decoder: Use online tools like CyberChef (https://gchq.github.io/CyberChef/) to decode
-base64 content directly in your browser.
+
+Online Decoder: Use online tools like CyberChef (https://gchq.github.io/CyberChef/) to decode base64 content directly in your browser.
+
 Decrypted Message:
 After decoding the base64 content, the resulting text file will contain the decrypted message.
 Format the Answer:
 Enter the decrypted message as the answer in the specified format A**aaa*AA .
 -------------------------------------------------------------------------------------------------------
 18. Analyze the traffic capture from an IoT network located in the Documents
-folder of the "EH Workstation – 1" (ParrotSecurity) machine, identify the packet with IoT
-Publish Message, and enter the topic length as the answer. (Format: N)
+folder of the "EH Workstation – 1" (ParrotSecurity) machine, identify the packet with IoT Publish Message, and enter the topic length as the answer. (Format: N)
 Answer: 9
 Solution:
 Access the Packet Capture File
 Open the "EH Workstation – 1" (ParrotSecurity) machine.
--------------------------------------------------------------------------------------------------------
+Navigate to the Documents folder where the traffic capture file, typically in PCAP or PCAPNG format, is located.
 
+Use Wireshark to Analyze the Capture
+Launch Wireshark on the ParrotSecurity machine.
+Load the Capture File
+Open the traffic capture file (e.g., IoT_traffic_capture.pcapng ) using Wireshark.
+
+Apply Display Filter
+To filter packets specifically related to IoT Publish Messages, use a display filter to narrow down the packets:This filter selects MQTT packets where msgtype 3 corresponds to Publish messages in MQTT (MQ Telemetry Transport) protocol, which is commonly used in IoT environments.
+mqtt.msgtype == 3
+
+Identify Packet Details
+Look through the filtered packets to find an MQTT Publish Message.
+Each MQTT Publish message has a topic associated with it.
+
+Determine the Topic Length
+Once you locate an MQTT Publish message, examine the topic field.
+The topic length is the number of characters or bytes that make up the topic string.
+
+Example Answer
+If, for instance, you find an MQTT Publish message with a topic length of 9 characters, such as sensors/temperature , then the answer would be:
+Answer: 9
 -------------------------------------------------------------------------------------------------------
+19. A disgruntled employee of your target organization has stolen the company's
+trade secrets and encrypted them using VeraCrypt. The VeraCrypt volume file "Its_File" is stored on the C: drive of the "EH Workstation – 2" machine. The password required to access the VeraCrypt volume has been hashed and saved in the file .txt in the Documents folder in the "EH Workstation – 1" (ParrotSecurity) machine. As an ethical hacker working with the company, you need to decrypt the hash in the Hash2crack.txt file, access the Veracrypt volume, and find the secret code in the file named EC_data.txt. (Format: NA*aNaa**A)
+Answer: 7E#r9ee(#U
+Solution:
+Step 1: Retrieve the Hashed Password
+
+1. Access "EH Workstation – 1" (ParrotSecurity) Machine
+Open the ParrotSecurity machine.
+Navigate to the Documents folder where Hash2crack.txt is located.
+
+2. Retrieve the Hash
+Open Hash2crack.txt and copy the hashed password. The hash is typically represented as a string of characters (e.g., MD5, SHA-256, etc.).
+
+Step 2: Decrypt the Hashed Password
+1. Use a Hash Cracking Tool
+Use a password cracking tool like John the Ripper, Hashcat, or online hash cracking services to decrypt the hash and reveal the original password.
+For example, if using John the Ripper:Replace Raw-MD5 with the appropriate hash format based on the hash type in Hash2crack.txt . rockyou.txt is a common wordlist for password cracking.
+
+shCopy code
+john --format=Raw-MD5 --wordlist=rockyou.txt Hash2crack.txt
+
+2. Obtain the Password
+Once the tool successfully cracks the hash, note down the decrypted password.
+
+Step 3: Access the VeraCrypt Volume
+1. Mount the VeraCrypt Volume
+On "EH Workstation – 2" machine, where Its_File is located, open VeraCrypt.
+2. Provide the Decrypted Password
+Select Its_File and choose the option to mount it.
+Enter the decrypted password obtained from Step 2 when prompted by VeraCrypt.
+3. Access the Encrypted File
+
+Step 4: Retrieve the Secret Code
+1. Locate and Open EC_data.txt
+Once mounted, navigate to EC_data.txt within the mounted VeraCrypt volume.
+2. Retrieve the Secret Code
+Open EC_data.txt and extract the secret code contained within.
+Example Answer
+If, for instance:
+The decrypted password from Hash2crack.txt is SecretPassword123
+The secret code found in EC_data.txt is Confidential789
+Then, the answer format would be:
+Answer: Confid789A
+-------------------------------------------------------------------------------------------------------
+20. Your organization suspects the presence of a rogue AP in the vicinity. You are
+tasked with cracking the wireless encryption, connecting to the network, and setting up a honeypot. The airdump-ng tool has been used, and the Wi-Fi traffic capture named
+"W!F!_Pcap.cap" is located in the Documents folder in the "EH Workstation – 1"
+(ParrotSecurity) machine. Crack the wireless encryption and enter the total number of
+characters present in the Wi-Fi password. (Format: N)
+Answer: 9
+Solution:
+
+Step 1: Access the Capture File
+1. Access "EH Workstation – 1" (ParrotSecurity) Machine
+Log in to the ParrotSecurity machine.
+Navigate to the Documents folder where W!F!_Pcap.cap is located.
+
+Step 2: Analyze the Capture File
+1. Use Aircrack-ng to Crack the Encryption
+Aircrack-ng is a tool used for breaking WEP and WPA-PSK keys. Here's how you can proceed with it:
+
+2. Identify the Target Network
+Use airodump-ng to list the wireless networks captured in the W!F!_Pcap.cap file:
+airodump-ng W!F!_Pcap.cap
+Note down the BSSID (MAC address) of the target network and the channel it's operating on.
+
+3. Capture Traffic for the Target Network
+Start capturing traffic on the target network to collect data packets:Replace BSSID and CHANNEL with the appropriate values from your network.
+airodump-ng --bssid BSSID --channel CHANNEL -w outputfile W!F!_Pcap.cap
+
+4. Crack the Wi-Fi Password
+Use aircrack-ng with the captured data to attempt to crack the Wi-Fi password. This step involves using a wordlist file ( rockyou.txt is commonly used) to perform a dictionary attack:Replace /path/to/wordlist.txt with the path to your wordlist file and outputfile-01.cap with the captured file generated by airodump-ng .
+aircrack-ng -w /path/to/wordlist.txt outputfile-01.cap
+
+5. Determine the Password Length
+Once aircrack-ng successfully cracks the Wi-Fi password, note the length of the password in characters.
+Example Answer
+If the cracked Wi-Fi password is Password123 , which has 11 characters:
+Answer: 11
 
 -------------------------------------------------------------------------------------------------------
 
@@ -894,45 +724,4 @@ open file
 decrypt the hash and enter the contents
 
 >>>>>>Suggested lectures: - Disk Encryption Using Veracrypt, Calculating Hashes on Windows with different tools
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
